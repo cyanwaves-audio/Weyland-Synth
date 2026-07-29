@@ -92,3 +92,41 @@ Weyland is monophonic and uses last-note priority. When the current note is rele
 | Custom 3D-printed enclosure | Panel and electronics housing |
 
 The complete bill of materials, including control types, connectors and supporting components, is provided in the project files.
+
+## Wiring and Pin Mapping
+
+### ESP32-S3 connections
+
+| GPIO | Connection |
+| ---: | --- |
+| 1 | MIDI host/device mode selector |
+| 4 | Oscillator mix |
+| 5 | Oscillator 2 detune |
+| 6, 7 | Oscillator 2 octave selector |
+| 9, 10 | LFO target selector |
+| 11–14 | Waveform selector |
+| 15 | UART MIDI input from the RP2040 bridge |
+| 16 | OLED SDA |
+| 17 | OLED SCL |
+| 35 | PCM5102A LRCK |
+| 36 | PCM5102A DIN |
+| 37 | PCM5102A BCK |
+| 39 | MCP3208 CS |
+| 40 | MCP3208 MOSI |
+| 41 | MCP3208 MISO |
+| 42 | MCP3208 SCK |
+
+### MCP3208 channels
+
+| Channel | Control |
+| ---: | --- |
+| CH0 | LFO rate |
+| CH1 | LFO depth |
+| CH2 | Drive |
+| CH3 | Filter cutoff |
+| CH4 | Filter envelope amount |
+| CH5 | Attack |
+| CH6 | Release |
+| CH7 | Master output |
+
+The supplied firmware compensates for the potentiometer orientation used in the original build. If the controls operate backwards in another build, swap the outer potentiometer connections or change the inversion behavior in the firmware.
