@@ -1,5 +1,9 @@
 # Weyland DOS-1
 
+<p align="center">
+  <img src="main/Weyland-02.JPG" alt="Weyland DOS-1 synthesizer" width="800">
+</p>
+
 Weyland DOS-1 is a digital monophonic synthesizer built from scratch around an ESP32-S3.
 
 It features two oscillators, waveform selection, oscillator mix and detune, an AR envelope, a low-pass filter, drive, and an LFO assignable to oscillator pitch or filter cutoff. Audio is generated at 48 kHz and sent through a PCM5102A DAC.
