@@ -1,7 +1,7 @@
 # Weyland DOS-1
 
 <p align="center">
-  <img src="main/Weyland-02.JPG" alt="Weyland DOS-1 synthesizer" width="800">
+  <img src="Weyland-02.JPG" alt="Weyland DOS-1 synthesizer" width="300">
 </p>
 
 Weyland DOS-1 is a digital monophonic synthesizer built from scratch around an ESP32-S3.
@@ -10,6 +10,7 @@ It features two oscillators, waveform selection, oscillator mix and detune, an A
 
 Weyland accepts USB MIDI directly as a device or through an RP2040-based USB host bridge, allowing it to work with class-compliant USB MIDI controllers without a computer.
 
+[Watch it in action here.](https://youtu.be/kIQRiqMi21E)
 ## Overview
 
 The project includes the synthesizer firmware, USB MIDI host firmware, wiring documentation, component list, and files for the custom 3D-printed enclosure.
