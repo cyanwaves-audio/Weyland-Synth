@@ -199,7 +199,7 @@ Because the Pico’s USB port runs as a host instead of a serial device, reflash
 
 ### ESP32-S3 and Pico connection
 
-The Pico communicates with the ESP32-S3 using the MGP protocol over UART:
+The Pico communicates with the ESP32-S3 using the MGP(1) protocol over UART:
 
 | Pico          | ESP32-S3                                 |
 | ------------- | ---------------------------------------- |
@@ -211,3 +211,6 @@ The UART connection runs at `115200` baud.
 In HOST mode, the Pico receives MIDI from a class-compliant USB MIDI controller and forwards note, sustain, modulation and pitch-bend messages to the ESP32-S3. In DEVICE mode, the Pico is held in reset and the ESP32-S3 accepts MIDI through its own USB connection.
 
 The Pico firmware uses GP25 for its status LED. Boards with a NeoPixel or a differently wired LED will still operate as MIDI bridges, but their status indicator may not work without changing `LED_PIN`.
+
+(1) MGP: Midi Gremlin Protocol. Weyland’s lightweight custom serial protocol. It packages USB MIDI events into fixed UART messages sent from the RP2040 host bridge to the ESP32-S3.
+
