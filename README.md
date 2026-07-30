@@ -6,7 +6,7 @@
 
 Weyland DOS-1 is a digital monophonic synthesizer built from scratch around an ESP32-S3.
 
-It features two oscillators, waveform selection, oscillator mix and detune, an AR envelope, a low-pass filter, drive, and an LFO assignable to oscillator pitch or filter cutoff. Audio is generated at 48 kHz and sent through a PCM5102A DAC.
+It features two oscillators, waveform selection, oscillator mix and detune, an AR envelope, a low-pass filter, drive, and an LFO assignable to oscillator 2 pitch or filter cutoff (or off). Audio is generated at 48 kHz and sent through a PCM5102A DAC.
 
 Weyland accepts USB MIDI directly as a device or through an RP2040-based USB host bridge, allowing it to work with class-compliant USB MIDI controllers without a computer.
 
@@ -15,7 +15,7 @@ Weyland accepts USB MIDI directly as a device or through an RP2040-based USB hos
 
 The project includes the synthesizer firmware, USB MIDI host firmware, wiring documentation, component list, and files for the custom 3D-printed enclosure.
 
-Weyland DOS-1 was designed as a complete playable instrument rather than a development board experiment: all synthesis parameters have dedicated physical controls, while a minimal OLED interface displays the current MIDI mode, oscillator range, and LFO assignment.
+Weyland DOS-1 was designed as a complete playable instrument rather than a development board experiment: all user-adjustable synthesis parameters have dedicated physical controls, while the OLED displays the current MIDI source, waveform, oscillator range, LFO assignment, parameter values, and a live scope of the final audio output.
 
 ## Features
 
@@ -25,13 +25,13 @@ Weyland DOS-1 was designed as a complete playable instrument rather than a devel
 - Low-pass filter with envelope modulation
 - Attack–release amplitude envelope
 - LFO with adjustable rate and depth
-- LFO routing to oscillator pitch, filter cutoff, or off
+- LFO routing to oscillator 2 pitch, filter cutoff, or off
 - Adjustable drive and master output
 - Velocity-sensitive MIDI response
 - Last-note priority with held-note fallback
 - Direct USB MIDI device mode
 - USB MIDI host mode through an RP2040 bridge
-- Minimal OLED status display
+- OLED status display with live parameter feedback and output waveform scope
 - Dedicated physical controls for every synthesis parameter
 - PCM5102A I²S audio output
 - Custom 3D-printed enclosure
@@ -130,3 +130,84 @@ The complete bill of materials, including control types, connectors and supporti
 | CH7 | Master output |
 
 The supplied firmware compensates for the potentiometer orientation used in the original build. If the controls operate backwards in another build, swap the outer potentiometer connections or change the inversion behavior in the firmware.
+
+
+## Firmware Setup
+
+Weyland uses two separate firmware sketches:
+
+* The **ESP32-S3 firmware** runs the synthesizer, display, controls, direct USB MIDI and MGP receiver.
+* The **RP2040 firmware** acts as a USB MIDI host and forwards MIDI to the ESP32-S3.
+
+### Requirements
+
+* Arduino IDE
+* **esp32** board package by Espressif Systems
+* **Raspberry Pi Pico/RP2040** board package by Earle F. Philhower III
+* Adafruit GFX Library
+* Adafruit SH110X Library
+
+TinyUSB host support is included with the RP2040 board package.
+
+### ESP32-S3 firmware
+
+The main synthesizer firmware consists of three files:
+
+* `Weyland_v0_28e_fixedTimebaseScope.ino`
+* `WeylandDisplay.cpp`
+* `WeylandDisplay.h`
+
+Keep all three files inside the same Arduino sketch folder.
+
+Use these Arduino IDE settings:
+
+| Setting         | Value              |
+| --------------- | ------------------ |
+| Board           | ESP32S3 Dev Module |
+| USB CDC On Boot | Disabled           |
+| USB Mode        | USB-OTG (TinyUSB)  |
+
+Compile and upload the sketch to the ESP32-S3.
+
+In DEVICE mode, the ESP32-S3 appears as a USB MIDI device named **Weyland DOS-1**.
+
+The OLED uses I²C address `0x3C`. If the display is missing or fails to initialize, the synthesizer will continue operating without it.
+
+### RP2040 USB host firmware
+
+The USB MIDI host bridge uses:
+
+* `Weyland_Pico_USBHost_HardwareReset_v0_5.ino`
+
+Place this file in its own Arduino sketch folder.
+
+Use these Arduino IDE settings:
+
+| Setting   | Value                                           |
+| --------- | ----------------------------------------------- |
+| Board     | Raspberry Pi Pico, or the matching RP2040 board |
+| USB Stack | Adafruit TinyUSB Host (native)                  |
+
+Before uploading, place Weyland’s MIDI source switch in **HOST** mode. In DEVICE mode, the hardware reset circuit holds the Pico in reset.
+
+Because the Pico’s USB port runs as a host instead of a serial device, reflashing may require manually entering BOOTSEL mode:
+
+1. Disconnect the Pico from USB.
+2. Hold the **BOOTSEL** button.
+3. Reconnect USB and release BOOTSEL.
+4. Upload the sketch from Arduino IDE.
+
+### ESP32-S3 and Pico connection
+
+The Pico communicates with the ESP32-S3 using the MGP protocol over UART:
+
+| Pico          | ESP32-S3                                 |
+| ------------- | ---------------------------------------- |
+| GP0 / UART TX | GPIO15 / UART RX through a 1 kΩ resistor |
+| GND           | GND                                      |
+
+The UART connection runs at `115200` baud.
+
+In HOST mode, the Pico receives MIDI from a class-compliant USB MIDI controller and forwards note, sustain, modulation and pitch-bend messages to the ESP32-S3. In DEVICE mode, the Pico is held in reset and the ESP32-S3 accepts MIDI through its own USB connection.
+
+The Pico firmware uses GP25 for its status LED. Boards with a NeoPixel or a differently wired LED will still operate as MIDI bridges, but their status indicator may not work without changing `LED_PIN`.
