@@ -197,6 +197,7 @@ Because the Pico’s USB port runs as a host instead of a serial device, reflash
 3. Reconnect USB and release BOOTSEL.
 4. Upload the sketch from Arduino IDE.
 
+
 ### ESP32-S3 and Pico connection
 
 The Pico communicates with the ESP32-S3 using the MGP(1) protocol over UART:
@@ -214,3 +215,25 @@ The Pico firmware uses GP25 for its status LED. Boards with a NeoPixel or a diff
 
 (1) MGP: Midi Gremlin Protocol. Weyland’s lightweight custom serial protocol. It packages USB MIDI events into fixed UART messages sent from the RP2040 host bridge to the ESP32-S3.
 
+
+## MIDI Source Selection
+
+Weyland supports two mutually exclusive MIDI input paths, selected with the physical HOST/DEVICE switch.
+
+| Mode | MIDI source | Behavior |
+| --- | --- | --- |
+| DEVICE | ESP32-S3 USB port | Weyland appears as a USB MIDI device named **Weyland DOS-1** |
+| HOST | RP2040 USB port | A class-compliant USB MIDI controller connects directly to Weyland |
+
+In HOST mode, the RP2040 converts incoming USB MIDI events into MGP messages and forwards them to the ESP32-S3 over UART.
+
+In DEVICE mode, the RP2040 is held in reset by the hardware reset circuit, preventing both MIDI paths from operating simultaneously.
+
+
+## Enclosure and 3D-Printing Files
+
+The repository includes the files for Weyland’s custom 3D-printed enclosure.
+
+I designed the enclosure in Autodesk Fusion around the specific boards, modules, controls and connectors used in the original build. Components with different dimensions may require modifications to the model.
+
+Before final assembly, test-fit the OLED, potentiometers, switches, USB connectors and audio jack.
