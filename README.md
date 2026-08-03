@@ -180,7 +180,7 @@ TinyUSB host support is included with the RP2040 board package.
 
 The main synthesizer firmware consists of three files:
 
-* `Weyland_v0_28e_fixedTimebaseScope.ino`
+* `Weyland_v0_28e.ino`
 * `WeylandDisplay.cpp`
 * `WeylandDisplay.h`
 
