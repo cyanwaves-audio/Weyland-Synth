@@ -75,6 +75,34 @@ MIDI can reach the synthesizer through two paths:
 
 Weyland is monophonic and uses last-note priority. When the current note is released, it returns to the newest note still being held.
 
+
+## MIDI
+
+Weyland DOS-1 can receive MIDI in two ways:
+
+* **USB device mode:** connect Weyland directly to a computer or DAW.
+* **USB host mode:** connect a class-compliant USB MIDI controller through the internal RP2040 Pico bridge.
+
+In host mode, the Pico reads the USB MIDI data and forwards supported messages to the ESP32-S3 using the custom MGP UART protocol. The selected MIDI source is handled exclusively rather than combining both inputs. The display identifies the active source.
+
+### Supported MIDI messages
+
+| MIDI message            | Behaviour                                                  |
+| ----------------------- | ---------------------------------------------------------- |
+| Note On                 | Plays the received note. Note velocity controls its level. |
+| Note Off                | Releases the note, subject to sustain-pedal state.         |
+| Note On with velocity 0 | Treated as Note Off.                                       |
+| Pitch Bend              | Bends the pitch of the active voice.                       |
+| CC 1 — Modulation Wheel | Adds MIDI-controlled modulation.                           |
+| CC 64 — Sustain Pedal   | Defers note releases while the pedal is held.              |
+| CC 120 — All Sound Off  | Immediately silences the synth.                            |
+| CC 123 — All Notes Off  | Clears the held-note state and releases the voice.         |
+
+Weyland listens on all 16 MIDI channels and uses **monophonic last-note priority**. The newest held note becomes active; releasing it returns to the most recently held previous note. The held-note stack also works with sustain-pedal input. The original note-priority and MGP transport behaviour was established in the earlier bridge firmware and retained in the final version.
+
+Channel pressure, polyphonic aftertouch, program changes, MIDI clock, SysEx, and arbitrary MIDI CC control of the front-panel parameters are not currently implemented.
+
+
 ## Hardware
 
 ### Core components
@@ -237,3 +265,13 @@ The repository includes the files for Weyland’s custom 3D-printed enclosure.
 I designed the enclosure in Autodesk Fusion around the specific boards, modules, controls and connectors used in the original build. Components with different dimensions may require modifications to the model.
 
 Before final assembly, test-fit the OLED, potentiometers, switches, USB connectors and audio jack.
+
+### BOM
+
+Exact MCUs I used:
+
+ESP32-S3 N16R8: https://aliexpress.com/item/1005007319706057.html
+
+Raspberry Pi Pico 16MB: https://aliexpress.com/item/1005005617180169.html
+
+I might update the full BOM sometime, but for now this and the provided schematics should be enough to start.
