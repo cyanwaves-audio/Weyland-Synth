@@ -119,7 +119,6 @@ Channel pressure, polyphonic aftertouch, program changes, MIDI clock, SysEx, and
 | USB connectors | Power, direct MIDI and USB-host MIDI |
 | Custom 3D-printed enclosure | Panel and electronics housing |
 
-The complete bill of materials, including control types, connectors and supporting components, is provided in the project files.
 
 ## Wiring and Pin Mapping
 
